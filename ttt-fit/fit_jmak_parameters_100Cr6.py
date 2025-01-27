@@ -1,7 +1,21 @@
 """
 Fit of temperature-dependent JMAK parameters N(T) and b(T) based on TTT diagram.
 
-TODO
+Three different variants of fitting are compared:
+
+- The isothermal fit is performed for each individual temperature. 
+  Because there are only 2 data point per temperature, and we fit 2 constant
+  parameters, we should obtain a perfect match of the reference data.
+  
+- The parameter fit approximates the temperature-dependency of the 
+  parameters by a polynomial ansatz for logb and N. The polynomial coefficients
+  are optimised to reproduce the parameters obtained from the isothermal
+  fit as best as possible.
+  
+- The model fit ignores the isothermal fit, and instead optimises the
+  polynomial coefficients to minimize the differences in phase fractions
+  after a given transformation time at each temperature.
+  
 
 """
 import numpy as np
@@ -10,6 +24,7 @@ from scipy.optimize import curve_fit
 import pandas as pd
 import matplotlib.pyplot as plt
 
+# comment this line if LaTeX is not installed
 plt.rcParams["text.usetex"] = True
 plt.rcParams['text.latex.preamble'] = "\n".join([r"\usepackage[utf8]{inputenc}",
                                                  r"\usepackage[T1]{fontenc}",
@@ -439,8 +454,6 @@ def plot_parameters(T_i, logb_i, N_i,
     
     plt.tight_layout()
     
-    # plt.show()
-    
     plt.savefig("plot_jmak_parameters.png", dpi=600)
     
     
@@ -544,7 +557,6 @@ def plot_ttt_diagram_all_models(T_i,
     plt.grid()
     
     plt.tight_layout()
-    # plt.show()
     
     plt.savefig("plot_ttt_diagram_both_fits.png", dpi=600)
     
@@ -625,7 +637,6 @@ def plot_ttt_diagram_model_fit(T_i,
     plt.grid()
     
     plt.tight_layout()
-    # plt.show()
     
     plt.savefig("plot_ttt_diagram_model_fit.png", dpi=600)
     
@@ -737,5 +748,3 @@ if __name__ == "__main__":
     plot_ttt_diagram_model_fit(T_i, t_ref_1, t_ref_99, t_i_1, t_i_99, 
                                T_model, t_model_1, t_model_99)
 
-    # plt.show()
-    
