@@ -1,10 +1,14 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
-Export vtk files from the homogeneous state example.
+Export field results from the bearing race example as vtk files.
+
+The variables specified in FIELD_NAMES are exported either at the
+node points or element centroids, as specified.
+
+The open source software Paraqus is used to perform the actual export.
+
+This script file is supposed to be executed in Abaqus Python.
 
 """
-
 import argparse
 import os
 
@@ -25,7 +29,21 @@ FIELD_REQUESTS = [("U", "nodes", None),
                   ]
 
 def export_results(job_name, output_dir):
+    """
+    Perform the actual export.
     
+    Parameters
+    ----------
+    job_name : str
+		Identifier of the Abaqus job.
+	output_dir : str
+		Directory for the vtk files.
+		
+	Returns
+	-------
+	None
+	
+    """
     odb_path = job_name + ".odb"
     output_path = os.path.join(os.path.pardir, output_dir, job_name)
 

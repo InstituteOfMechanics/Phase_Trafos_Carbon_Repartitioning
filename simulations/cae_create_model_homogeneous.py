@@ -1,8 +1,10 @@
-# -*- coding: utf-8 -*-
 """
-Create the example model for the inner race of a tapered bearing.
+Create the model for all homogeneous simulations.
 
-TODO: LICENSE INFO ETC
+Different cases and conditions can be selected through the parsed
+arguments, e.g. isothermal or cooling etc.
+
+This script file is supposed to be executed in Abaqus Python.
 
 """
 # standard library imports

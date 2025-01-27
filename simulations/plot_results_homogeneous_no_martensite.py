@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 Create plots for the homogeneous problem without martensite evolution.
 
@@ -61,35 +59,25 @@ if __name__ == "__main__":
         ax1.plot(time, temp, style, label=label)
 
         # subplot: microstructure
-        ax2.plot(time, sdv[:,1], style,
-                 # label=label
-                 )
+        ax2.plot(time, sdv[:,1], style)
 
        # subplot: carbon fraction
-        ax3.plot(time, sdv[:,3], style,
-                 # label=label
-                 )
+        ax3.plot(time, sdv[:,3], style)
 
-        ax4.plot(time[1:], sdv[1:,9], style,
-                 # label=label
-                 )
+        ax4.plot(time[1:], sdv[1:,9], style)
  
         
     
     ax1.set_ylabel(r"Temperature $T$ / \si{\celsius}")
-    # ax1.legend()
     ax1.grid()
 
     ax2.set_ylabel(r"Bainite fraction $\beta_\mathrm{B}$")
-    # ax2.legend()
     ax2.grid()
     
     ax3.set_ylabel(r"Carbon content $x_{C,\mathrm{A}}$")
-    # ax3.legend()
     ax3.grid()
 
     ax4.set_ylabel(r"Trafo factor $f$")
-    # ax4.legend()
     ax4.grid()
     ax4.set_xlabel(r"Time $t$  / \si{\second}")    
     
@@ -97,8 +85,6 @@ if __name__ == "__main__":
     
     plt.tight_layout()    
     fig.align_ylabels()
-    
-    # plt.show()
     
     png_path = plot_path / "results_homogeneous_no_martensite.png"
 

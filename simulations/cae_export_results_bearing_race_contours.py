@@ -1,10 +1,11 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
-Export selected results from the bearing race example.
+Export contour displacements from the bearing race example.
+
+The results are stored in a numpy .npz file.
+
+This script file is supposed to be executed in Abaqus Python.
 
 """
-
 import argparse
 import numpy as np
 
@@ -14,7 +15,19 @@ from abaqusConstants import NODAL
 INNER_RADIUS = 150
 
 def export_displacements(job_name):
-
+	"""
+	Perform the export of displacements.
+	
+	Parameters
+	----------
+	job_name : str
+		Abaqus job identifier.
+		
+	Returns
+	-------
+	None
+	
+	"""
     odb_path = job_name + ".odb"
     npz_path = job_name + "_displacements" + ".npz"
     
@@ -62,7 +75,24 @@ def parse_arguments():
 
 
 def read_node_field(odb, frame, field_name):
+    """
+    Get the data associated with a node field.
     
+    Parameters
+    ----------
+    odb : Abaqus Odb
+		The output database.
+	frame : Abaqus Frame
+		The frame that will be exported.
+	field_name : str
+		Name of the exported fields.
+		
+	Returns
+	-------
+	ArrayLike
+		The field values.
+    
+    """
     fieldOut = frame.fieldOutputs[field_name].getSubset(position=NODAL)
     vals = fieldOut.values
 

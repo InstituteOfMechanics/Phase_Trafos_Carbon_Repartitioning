@@ -1,7 +1,5 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
-This module holds all functions that are used in multiple BVPs.
+Functions that are used in both examples.
 
 """
 

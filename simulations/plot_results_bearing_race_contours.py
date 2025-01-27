@@ -1,7 +1,5 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
-Plot selected results for the quenching of the bearing race.
+Plot the deformation of the inner contour for the bearing race example.
 
 """
 from pathlib import Path

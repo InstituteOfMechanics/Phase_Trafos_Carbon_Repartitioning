@@ -1,10 +1,8 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 Plot selected results for the quenching of the bearing race.
 
-Note: this script creates plots for 3 points, but only point 1 and 3 are
-used in the paper, where point 3 is called point 2.
+Note: The points denoted P1 and P2 in the paper are denoted P1 and P3 in
+the model. This is taken into account in this script.
 
 """
 from pathlib import Path
@@ -14,10 +12,10 @@ import matplotlib.pyplot as plt
 RESULT_DIR = "simulations_bearing_race"
 PLOT_DIR = "plots"
 
-# Enable LaTeX rendering
+# enable LaTeX rendering
 plt.rc('text', usetex=True)
 
-# Set font to DejaVuSans
+# set font to DejaVuSans
 plt.rc('font', **{'family': 'serif', 
                'size': 9
               })
@@ -76,13 +74,9 @@ if __name__ == "__main__":
             
             selector = time <= 180
             
-        
             ax1.plot(time[selector], temp_e[selector], style, label=label)
-        
             ax2.plot(time[selector], sdv_e[selector,0], style, label=label)
-        
             ax3.plot(time[selector], sdv_e[selector,1], style, label=label)
-        
             ax4.plot(time[selector], sdv_e[selector,3], style, label=label)
         
         
@@ -90,21 +84,17 @@ if __name__ == "__main__":
         ax1.set_ylabel(r"Temperature $T$ / \si{\celsius}")
         
         ax1.grid()
-        # ax1.legend()
         ax1.legend(bbox_to_anchor=(0.4, 1.60), loc='upper center', borderaxespad=0., ncol=2)
     
         ax2.set_ylabel(r"Martensite fraction $\beta_\mathrm{M}$")
         ax2.grid()
-        # ax2.legend()
     
         ax3.set_ylabel(r"Bainite fraction $\beta_\mathrm{B}$")
         ax3.grid()
-        # ax3.legend()
         
         ax4.set_xlabel(r"Time $t$ / \si{\second}")
         ax4.set_ylabel(r"Carbon content $x_{C,\mathrm{A}}$")
         ax4.grid()
-        # ax4.legend()
         
         plt.tight_layout()    
         

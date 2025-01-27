@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*-
 """
 Create the example model for the inner race of a tapered bearing.
-
-TODO: LICENSE INFO ETC
 
 The quenching process is simulated in two steps. This choice is made to reduce
 data size, since a reduced output frequency is prescribed in the second step,
 where the evolution of the microstructure is slowed down considerably.
+
+This script file is supposed to be executed in Abaqus Python.
 
 """
 # standard library imports

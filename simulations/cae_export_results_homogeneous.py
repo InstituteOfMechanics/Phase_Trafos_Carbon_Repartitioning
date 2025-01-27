@@ -1,10 +1,13 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
-Export selected results from the homogeneous state example.
+Export selected results from the homogeneous cooling example.
+
+The variables specified in FIELD_NAMES are averaged at the centroids
+of the elements containing the specified points and stored in a
+numpy .npz file.
+
+This script file is supposed to be executed in Abaqus Python.
 
 """
-
 import argparse
 import numpy as np
 
@@ -15,7 +18,19 @@ FIELD_NAMES = ["TEMP", "SDV1", "SDV2", "SDV3", "SDV4", "SDV5",
                "SDV6", "SDV7", "SDV8", "SDV9", "SDV10", "E"]
 
 def export_results(job_name):
-
+	"""
+	Perform the export of results.
+	
+	Parameters
+	----------
+	job_name : str
+		Abaqus job identifier.
+		
+	Returns
+	-------
+	None
+	
+	"""
     odb_path = job_name + ".odb"
     npz_path = job_name + ".npz"
     

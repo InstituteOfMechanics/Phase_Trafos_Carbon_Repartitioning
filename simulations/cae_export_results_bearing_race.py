@@ -1,10 +1,13 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 Export selected results from the bearing race example.
 
-"""
+The variables specified in FIELD_NAMES are averaged at the centroids
+of the elements containing the specified points and stored in a
+numpy .npz file.
 
+This script file is supposed to be executed in Abaqus Python.
+
+"""
 import argparse
 import numpy as np
 
@@ -15,7 +18,19 @@ FIELD_NAMES = ["TEMP", "SDV1", "SDV2", "SDV3", "SDV4", "SDV5",
                "SDV6", "SDV7", "SDV8", "SDV9", "SDV10", "E"]
 
 def export_results(job_name):
-
+	"""
+	Perform the export of results.
+	
+	Parameters
+	----------
+	job_name : str
+		Abaqus job identifier.
+		
+	Returns
+	-------
+	None
+	
+	"""
     odb_path = job_name + ".odb"
     npz_path = job_name + ".npz"
     
@@ -88,6 +103,27 @@ def parse_arguments():
 
 
 def read_node_point_data(odb, steps, field_names, set_name):
+	"""
+	Read node data from an output database.
+	
+	Parameters
+	----------
+	odb : Abaqus Odb
+		The Output database.
+	steps : Sequence[Abaqus Step]
+		Export the results from these steps.
+	field_names : Sequence[str]
+		Export these fields.
+	set_name : str
+		Export only data associated with this node set.
+		
+	Returns
+	-------
+	dict
+		Key are the field names, values are the time history of the
+		fields.
+	
+	"""
     field_data = {}
 
     nset = odb.rootAssembly.instances["bearing race"].nodeSets[set_name]
@@ -112,6 +148,25 @@ def read_node_point_data(odb, steps, field_names, set_name):
 
 
 def read_element_centroid_data(steps, field_names, coord):
+	"""
+	Read element data at a single element centroid.
+	
+	Parameters
+	----------
+	steps : Sequence[Abaqus Step]
+		Export the results from these steps.
+	field_names : Sequence[str]
+		Export these fields.
+	coord : ArrayLike
+		Coordinates of any point in the target element.
+		
+	Returns
+	-------
+	dict
+		Key are the field names, values are the time history of the
+		fields.
+	
+	"""
     frame = steps[0].frames[0]
     fieldOut = frame.fieldOutputs["COORD"].getSubset(position=CENTROID)
     values = fieldOut.values

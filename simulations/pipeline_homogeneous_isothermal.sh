@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+# Main script for the isothermal transformation (not shown in the paper).
+#
+# Executing this script will create the different models, perform the
+# simulations, export results, and generate the plots.
+
 VENV_PATH="../.venv/bin/activate"
 ONEAPI_SCRIPT="/opt/intel/oneapi/setvars.sh"
 ABAQUS_BIN="/opt/abaqus/2023/SIMULIA/Commands/abaqus"

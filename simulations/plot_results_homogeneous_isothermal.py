@@ -1,7 +1,5 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
-Plot selected results for the one element test.
+Plot selected results for the isothermal transformation (not shown in paper).
 
 """
 import numpy as np

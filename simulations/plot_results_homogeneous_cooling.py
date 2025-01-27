@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 Create plots for the homogeneous cooling problem.
 
@@ -102,4 +100,3 @@ if __name__ == "__main__":
     plt.figure(2)
     plt.savefig(png_path2, dpi=600)
     
-    # plt.show()
