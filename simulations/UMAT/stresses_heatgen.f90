@@ -1,9 +1,11 @@
-! TODO: LICENCE ETC
-
 !=======================================================================
+! This file contains the constitutive laws for the stresses and heat
+! generation. All routines assume that the internal variables have
+! already been updated.
 !
-!   
-!
+! Voigt notation is used for the stresses/strains. Abaqus has a
+! different order for the shear components, but since our material
+! model is isotropic is does not change anything.
 !=======================================================================
 subroutine calculate_stresses(stress, DdstressDdstrain, DdstressDtemp, &
 							  DdstressDkappa, dstrainTh, dstrainTr, &
@@ -18,7 +20,7 @@ subroutine calculate_stresses(stress, DdstressDdstrain, DdstressDtemp, &
 	! ntens             : Number of tensor components
 	! ndi				: Number of direct tensor components
 	! nkappa			: Number of components in the SDV vector kappa
-	! strain			: Strain at beginning of increment
+	! strain			: Strain at beginning of increment (Voigt notation)
 	! strainTh          : Linear thermal strain at beginning of increment
 	! strainTr          : Linear transformation strain at beginning of increment
 	! dstrain			: Strain increment
@@ -68,7 +70,7 @@ subroutine calculate_stresses(stress, DdstressDdstrain, DdstressDtemp, &
     betaAn = 1.0d0 - betaMn - betaBn
     
     ! evaluate parameterization for temp-dependent material parameters
-    ! and their derivatives 
+    ! and their derivatives
     EM = mdata%mech_p0EM + mdata%mech_p1EM*temp
     dEMdtemp = mdata%mech_p1EM
 	EB = mdata%mech_p0EB + mdata%mech_p1EB*temp

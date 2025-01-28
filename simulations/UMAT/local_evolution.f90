@@ -1,5 +1,3 @@
-! TODO: LICENCE ETC
-
 !=======================================================================
 !
 ! This file contains all subroutines used for the solution of the
@@ -15,6 +13,10 @@ include 'mkl_lapack.f90' ! needed for linear equation solver
 
 subroutine solve_linear_system(x, info, n, A, b)
 	! Solve the linear system of equations A*x=b
+	!
+	! This wrapper for lapack's dgetrf/dgetrs routines is less efficient
+	! but more readable, since it allocates a new array for the solution
+	! instead of overwriting the right hand side.
 	!
 	! Input variables
 	! ==================================================================
@@ -68,6 +70,7 @@ subroutine heaviside(x, x0, w, y, dydx, dydx0)
 	! y     : Value of the regularized step function
 	! dydx  : Derivative w.r.t. x
 	! dydx0 : Derivative w.r.t. x0
+	
 	implicit none
 
 	double precision, intent(in) :: x, x0, w
@@ -79,7 +82,7 @@ subroutine heaviside(x, x0, w, y, dydx, dydx0)
 	
 	! if switch to prevent possible overflows of cosh()
 	if (abs(x-x0) < w) then
-		! use tanh near x0 where it is well defined
+		! use tanh near x0 where it is well behaved
 		y = 0.5d0*(tanh(a*(x - x0)) + 1.0d0)
 		dydx = 0.5d0*a/cosh(a*(x - x0))**2
 		dydx0 = -0.5d0*a/cosh(a*(x - x0))**2
@@ -118,6 +121,7 @@ subroutine max_bainite_fraction(betaBhat, dbetaBhatdT, dbetaBhatdbetaM, &
 	! DbetaBhatDbetaB   : Derivative w.r.t. bainite fraction
 	! DbetaBhatDxCA     : Derivative w.r.t. austenite carbon fraction
 	! f                 : Factor for incomplete trafo 
+	
 	use material_data_mod
 	
 	implicit none
@@ -134,7 +138,7 @@ subroutine max_bainite_fraction(betaBhat, dbetaBhatdT, dbetaBhatdbetaM, &
 								   
 	double precision :: betaA, xCAinf, dfdxCA, dfdxCAinf, dfdT, dxCAinfdT
 	
-	! calculate the carbon fraction for which T = Bs
+	! calculate the carbon fraction xCAinf for which T = Bs
 	! T = Bs = p0 + p1*xCAinf
 	betaA = 1.0d0 - betaM - betaB
 	
@@ -304,6 +308,7 @@ subroutine bainite_evolution(RbetaB, DRbetaBDkappa, DRbetaBDtemp, f, &
 	! DRbetaBDkappa   : Derivative w.r.t. SDVs
 	! DRbetaBDtemp    : Derivative w.r.t. temperature
 	! f               : Factor for incomplete bainite transformation
+	
 	use material_data_mod
 							 
 	implicit none
@@ -455,7 +460,6 @@ subroutine bainite_evolution(RbetaB, DRbetaBDkappa, DRbetaBDtemp, f, &
 			end if
 		
         case default
-            ! request should only ever be 1 or 2
             write (*,*) 'Wrong request in bainite evolution.'
             stop 1
 
@@ -486,7 +490,7 @@ subroutine carbon_evolution(RxCA, DRxCADkappa, DRxCADtemp, &
 	! RxCA            : Residual for carbon fraction evolution
 	! DRxCAMDkappa    : Derivative w.r.t. SDVs
 	! DRxCADtemp      : Derivative w.r.t. temperature
-
+	
 	use material_data_mod
 	
 	implicit none
@@ -622,6 +626,8 @@ subroutine local_evolution(kappa, DkappaDtemp, pnewdt, fbainite, &
 						   nkappa, kappan, dtime, tempn, dtemp, mdata)
 	! Solve the local system of evolution equations, and calculate the
 	! derivative of the SDVs w.r.t. temperature
+	!
+	! This is the routine that actually implements the solver from MKL.
 	!
 	! Input variables
 	! ==================================================================

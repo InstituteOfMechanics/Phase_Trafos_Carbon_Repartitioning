@@ -1,5 +1,9 @@
-! TODO: LICENCE ETC
+!=======================================================================
+! This file contains the main UMAT and UMATHT subroutines, and therefore
+! defines the interface between Abaqus and the custom coding. 
+!=======================================================================
 
+! include separate files
 include 'model_parameters.f90'
 include 'local_evolution.f90'
 include 'stresses_heatgen.f90'
@@ -19,15 +23,16 @@ SUBROUTINE UMAT(stress, statev, ddsdde, sse, spd, scd, rpl, ddsddt, &
     !
     ! The following order is used for the state variables:
     ! ==================================================================
-	! statev(1) : martensite volume fraction
-	! statev(2) : bainite volume fraction
-	! statev(3) : austenite volume fraction (dependent variable - only for output)
-	! statev(4) : carbon mass fraction in austenite phase
-	! statev(5) : accumulated linear thermal strain
-    ! statev(6) : accumulated linear transformation strain
-	! statev(7) : derivative of betaM w.r.t. temp (passed to UMATHT)
-	! statev(8) : derivative of betaB w.r.t. temp (passed to UMATHT)
-	! statev(9) : derivative of xCA w.r.t. temp (passed to UMATHT)
+	! statev(1)  : martensite volume fraction
+	! statev(2)  : bainite volume fraction
+	! statev(3)  : austenite volume fraction
+	! statev(4)  : carbon mass fraction in austenite phase
+	! statev(5)  : accumulated linear thermal strain
+    ! statev(6)  : accumulated linear transformation strain
+	! statev(7)  : derivative of betaM w.r.t. temp (passed to UMATHT)
+	! statev(8)  : derivative of betaB w.r.t. temp (passed to UMATHT)
+	! statev(9)  : derivative of xCA w.r.t. temp (passed to UMATHT)
+    ! statev(10) : partial bainite transformation factor f
 	
     use material_data_mod
     
@@ -47,9 +52,11 @@ SUBROUTINE UMAT(stress, statev, ddsdde, sse, spd, scd, rpl, ddsddt, &
     double precision, intent(out) :: ddsdde(ntens,ntens), ddsddt(ntens), &
                                      drplde(ntens), rpl, drpldt
 
-    double precision, intent(inout) :: stress(ntens), sse, spd, scd, pnewdt, statev(nstatv)
+    double precision, intent(inout) :: stress(ntens), sse, spd, scd, &
+                                       pnewdt, statev(nstatv)
                                        
-    ! nkappa : number of independent state variable in the metallurgical evolution equation
+    ! nkappa : number of independent state variable in the metallurgical
+    ! evolution equations
     integer, parameter :: nkappa = 3
     
     integer :: i, material_flag, martensite_flag, bainite_flag
@@ -72,7 +79,8 @@ SUBROUTINE UMAT(stress, statev, ddsdde, sse, spd, scd, rpl, ddsddt, &
     martensite_flag = nint(props(3))
     bainite_flag = nint(props(4))
     
-    ! get a struct with all model parameters
+    ! get a struct with all model parameters to easily pass them to
+    ! all subroutines
     call get_material_data(mdata, material_flag, density, &
                            martensite_flag, &
                            bainite_flag)
@@ -86,8 +94,7 @@ SUBROUTINE UMAT(stress, statev, ddsdde, sse, spd, scd, rpl, ddsddt, &
 	kappan(3) = statev(4)
 	
     !===================================================================
-    ! Step 1: Solve evolution equations locally, and compute derivative
-    !         of sdvs w.r.t. temperature (dkappadtemp).
+    ! Step 1: Solve evolution equations for kappa and derivatives
     !         Derivative w.r.t. strains is 0 for this model.
     !===================================================================
     call local_evolution(kappa, dkappadtemp, pnewdt, fbainite, nkappa, &
@@ -108,7 +115,7 @@ SUBROUTINE UMAT(stress, statev, ddsdde, sse, spd, scd, rpl, ddsddt, &
     statev(10) = fbainite
     
     !===================================================================
-    ! Step 2: Compute stresses and partial derivatives
+    ! Step 2: Constitutive model and derivatives
     !===================================================================
     strainTh = statev(5)
     strainTr = statev(6)
@@ -121,15 +128,12 @@ SUBROUTINE UMAT(stress, statev, ddsdde, sse, spd, scd, rpl, ddsddt, &
     statev(5) = statev(5) + dstrainTh
     statev(6) = statev(6) + dstrainTr
     
-    !===================================================================
-    ! Step 3: Compute heat generation and partial derivatives
-    !===================================================================
     call calculate_heatgen(rpl, drplde, drpldt, drpldkappa, ntens, &
                            nkappa, kappa, kappan, temp, dtemp, dtime, &
                            mdata)
     
     !===================================================================
-    ! Step 4: Tangent corrections by implicit function theorem
+    ! Step 4: Sensitivities
     !===================================================================
     ddsddt = ddsddt + matmul(dstressdkappa, dkappadtemp)
     drpldt = drpldt + dot_product(drpldkappa, dkappadtemp)
@@ -148,6 +152,15 @@ SUBROUTINE UMATHT(u, dudt, dudg, flux, dfdt, dfdg, &
                   pnewdt, noel, npt, layer, kspt, kstep, kinc)
     ! The interface for the UMATHT subroutine is documented in the Abaqus
     ! docs, so we do not repeat it here...
+    !
+    ! Variables that will be updated by this subroutine:
+    ! ==================================================================
+    ! U    : internal thermal energy per unit mass
+    ! dudt : variation of U w.r.t. temperature
+    ! dudg : variation of U w.r.t. temperature gradient (usually 0)
+    ! flux : heat flux vector
+    ! dfdt : variation of heat flux vector w.r.t. temperature
+    ! dfdg : variation of heat flux vector w.r.t. temperature gradient
     use material_data_mod
     
     implicit none
@@ -174,14 +187,6 @@ SUBROUTINE UMATHT(u, dudt, dudg, flux, dfdt, dfdg, &
     type(material_data_type) :: mdata
 
     integer i
-    ! Variables that will be updated by this subroutine:
-    ! ==================================================================
-    ! U    : internal thermal energy per unit mass
-    ! dudt : variation of U w.r.t. temperature
-    ! dudg : variation of U w.r.t. temperature gradient (usually 0)
-    ! flux : heat flux vector
-    ! dfdt : variation of heat flux vector w.r.t. temperature
-    ! dfdg : variation of heat flux vector w.r.t. temperature gradient
     
     ! get a struct with all model parameters
     call get_material_data(mdata, props(1), props(2))
@@ -218,10 +223,18 @@ SUBROUTINE UMATHT(u, dudt, dudg, flux, dfdt, dfdg, &
     dlambdtemp =   betaM*dlambMdtemp + betaB*dlambBdtemp + betaA*dlambAdtemp &
                  + dbetaMdtemp*lambM + dbetaBdtemp*lambB + dbetaAdtemp*lambA
     
-    ! update the results
-    dudt = cp
+    !===================================================================
+    ! Update internal energy and heat flux
+    ! The dependency on the internal variables was already included in
+    ! the derivatives.
+    !===================================================================
     u = u + cp*dtemp
     
+    dudt = cp
+    
+    dudg(:) = 0.0d0
+    
+
     flux(:) = -lamb*dtemdx(:)
     
     dfdt(:) = -dlambdtemp*dtemdx(:)
@@ -229,9 +242,6 @@ SUBROUTINE UMATHT(u, dudt, dudg, flux, dfdt, dfdg, &
     dfdg = 0.0d0
     forall (i=1:ntgrd) dfdg(i,i) = -lamb
     
-    dudg(:) = 0.0d0
-      
-
 END SUBROUTINE UMATHT
 
 

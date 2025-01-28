@@ -1,11 +1,12 @@
-! TODO: License etc
-
 !=======================================================================
 !
 ! This file contains a custom data type that holds all parameters for
 ! the material model, as well as a subroutine to set the values for
 ! these parameters according to the chosen material (100Cr6 or 
 ! 100CrMnSi6-4).
+!
+! This means that model parameters are hard-coded here, which could be
+! improved in future versions.
 !
 !=======================================================================
 
