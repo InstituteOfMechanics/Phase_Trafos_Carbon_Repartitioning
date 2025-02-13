@@ -1,12 +1,10 @@
 # Abaqus simulations
 
-This directory contains the source code for all Abaqus simulations presented in [@furlan2025].
+This directory contains the source code for all Abaqus simulations presented in the [journal article](https://doi.org/10.1016/j.mechmat.2025.105275).
 
 ## Requirements
 
-TODO
-
-Make sure to set the paths in the top section of all shell scripts (``pipeline_XXX.sh``) so that they match your installations.
+The following software is required to run the simulation and the post-processing. The repository provides shell scripts (``pipeline_*.sh``) that will run all necessary steps under Linux, but require the user to set some paths/commands in the top section so all software is found. If you use another OS or prefer to follow the steps yourself, you might need to replace the commands in the scripts by appropriate versions for the OS you are using.
 
 
 ### Abaqus
@@ -15,7 +13,7 @@ The simulations are performed with Abaqus, so you need to have it installed.
 
 ### OneAPI
 
-The fortran subroutines use the Intel OneAPI library, so you need to install it (base and HPC toolkits).
+The Fortran subroutines for Abaqus use the Intel OneAPI library, so you need to install it (base and HPC toolkits).
 
 ### Python
 
@@ -23,7 +21,7 @@ The post-processing and plotting is performed in Python. The easiest way is to i
 
 ### LaTeX
 
-Some of the plots use LaTeX to create nice captions.
+Some of the plots use LaTeX to create nice captions. You can disable the Latex processing in the scripts by setting the matplotlib option ``text.usetex=False`` in the python plot scripts.
 
 
 ## Reproduction of isothermal bainite transformations
@@ -112,7 +110,9 @@ The shell script ``pipeline_bearing_race.sh`` automates the model creation, simu
   - execute the script ``plot_results_bearing_race.py`` in Python outside of Abaqus to create the plots of the evolution at the selected points P1 and P2 (``plots/...`` and ``plots/...``)
   - execute the script ``plot_results_bearing_race_contours.py`` in Python outside of Abaqus to create the plots of the inner bore contours after quenching (``plots/...``)
 
-TODO: Paraview
 
+## VTK results
+
+Some simulation results for the bearing ring example are provided as .vtu files (VTK file format) in the subdirectory ``vtk-results``. These files can be inspected for example with the free software [ParaView](https://www.paraview.org).
 
 
