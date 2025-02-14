@@ -23,10 +23,10 @@ mkdir $SIMULATION_DIR -p
 cp abaqus_v6.env $SIMULATION_DIR
 
 # create the input for the jobs
-#$ABAQUS_BIN cae nogui=cae_create_model_homogeneous.py -- --dir $SIMULATION_DIR --htc 0.0001 --material_flag 0 --disable_martensite --isothermal
-#$ABAQUS_BIN cae nogui=cae_create_model_homogeneous.py -- --dir $SIMULATION_DIR --htc 0.0001 --material_flag 0 --disable_martensite --isothermal --fix_temperature
-#$ABAQUS_BIN cae nogui=cae_create_model_homogeneous.py -- --dir $SIMULATION_DIR --htc 0.0001 --material_flag 1 --disable_martensite --isothermal
-#$ABAQUS_BIN cae nogui=cae_create_model_homogeneous.py -- --dir $SIMULATION_DIR --htc 0.0001 --material_flag 1 --disable_martensite --isothermal --fix_temperature
+$ABAQUS_BIN cae nogui=cae_create_model_homogeneous.py -- --dir $SIMULATION_DIR --htc 0.0001 --material_flag 0 --disable_martensite --isothermal
+$ABAQUS_BIN cae nogui=cae_create_model_homogeneous.py -- --dir $SIMULATION_DIR --htc 0.0001 --material_flag 0 --disable_martensite --isothermal --fix_temperature
+$ABAQUS_BIN cae nogui=cae_create_model_homogeneous.py -- --dir $SIMULATION_DIR --htc 0.0001 --material_flag 1 --disable_martensite --isothermal
+$ABAQUS_BIN cae nogui=cae_create_model_homogeneous.py -- --dir $SIMULATION_DIR --htc 0.0001 --material_flag 1 --disable_martensite --isothermal --fix_temperature
 
 # go to the simulation directory and execute all simulations
 cd $SIMULATION_DIR
@@ -39,8 +39,8 @@ for FILE_NAME in homogeneous*.inp; do
 	echo "Processing job ${JOB_NAME}"
 	echo "============================================================="
 	
-    #$ABAQUS_BIN job=$JOB_NAME user=../$UMAT_DIR/$UMAT_MAIN_FILE ask_delete=OFF -interactive
-    #$ABAQUS_BIN cae nogui="../cae_export_results_homogeneous.py" -- --job_name $JOB_NAME
+    $ABAQUS_BIN job=$JOB_NAME user=../$UMAT_DIR/$UMAT_MAIN_FILE ask_delete=OFF -interactive
+    $ABAQUS_BIN cae nogui="../cae_export_results_homogeneous.py" -- --job_name $JOB_NAME
 done
 
 # create the plots from the exported results
