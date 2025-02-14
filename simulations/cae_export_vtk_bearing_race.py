@@ -31,64 +31,64 @@ FIELD_REQUESTS = [("U", "nodes", None),
 def export_results(job_name, output_dir):
     """
     Perform the actual export.
-    
+
     Parameters
     ----------
     job_name : str
-		Identifier of the Abaqus job.
-	output_dir : str
-		Directory for the vtk files.
-		
-	Returns
-	-------
-	None
-	
+        Identifier of the Abaqus job.
+    output_dir : str
+        Directory for the vtk files.
+
+    Returns
+    -------
+    None
+
     """
     odb_path = job_name + ".odb"
     output_path = os.path.join(os.path.pardir, output_dir, job_name)
 
     reader = OdbReader(odb_path, job_name)
-    
+
     for field_name, field_position, invariant in FIELD_REQUESTS:
         reader.add_field_export_request(field_name,
                                         field_position=field_position,
                                         invariant=invariant)
-        
+
     step_name = "equalizing"
-    
+
     models = list(reader.read_instances(step_name, -1))
-    
+
     assert len(models) == 1
-    
+
     model = models[0]
-    
+
     writer = BinaryWriter(output_path, clear_output_dir=True)
-    
+
     writer.write(model)
-    
-        
+
+
 def parse_arguments():
     """Get a dict of parsed argument values."""
     parser = argparse.ArgumentParser()
-    
+
     parser.add_argument("--job_name",
                         type=str,
                         help="Name of the job without file extensions",
                         )
-    
+
     parser.add_argument("--output_dir",
                         type=str,
                         help="Base directory for vtk output",
                         )
-    
+
     args, _ = parser.parse_known_args()
-    
+
     return vars(args)
 
 
 if __name__ == "__main__":
     args = parse_arguments()
-        
+
     export_results(**args)
-        
-        
+
+
